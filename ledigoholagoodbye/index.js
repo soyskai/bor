@@ -1,17 +1,11 @@
 const express = require('express');
 const { haxballBot } = require('./examples/script');
-const { discordBot } = require('./examples/bot');
 
 const app = express();
 
 app.get('/start/script1', (req, res) => {
     haxballBot;
     res.send('script1.js iniciado');
-});
-
-app.get('/start/script2', (req, res) => {
-    discordBot;
-    res.send('script2.js iniciado');
 });
 
 app.listen(3000, () => {
