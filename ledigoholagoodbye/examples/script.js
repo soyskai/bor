@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const FormData = require('form-data');
-require('dotenv').config();
 
 const mapaX3 = fs.readFileSync('./examples/maps/mapaX3.hbs', 'utf-8');
 const mapaX5 = fs.readFileSync('./examples/maps/mapaX5.hbs', 'utf-8');
@@ -88,7 +87,7 @@ HaxballJS.then((HBInit) => {
       "lon": -70.5445,
       "code": "AR"
     },
-    token: process.env.HAXBALL
+    token: thr1.AAAAAGbt8AYtFgLSUTnOqg.txa-aP1m24c
   });
   // "| 𝘓𝘌𝘎𝘐𝘖𝘕 𝘗𝘈𝘕𝘋𝘈 - 🐼🎋
   const ranks = {
