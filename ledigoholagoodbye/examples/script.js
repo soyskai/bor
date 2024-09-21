@@ -17,7 +17,7 @@ let rolesData;
 try {
   rolesData = JSON.parse(fs.readFileSync(rolesFilePath, 'utf8'));
 } catch (err) {
-  console.error('Error al leer roles.json:', err);
+  console.error('Error al leer roles.json:', err); // hola mi corazón, cómo estás? <3 i love u
   rolesData = {
     roles: { usuarios: { users: [] } }
   };
@@ -69,7 +69,7 @@ let roomLink = '';
 HaxballJS.then((HBInit) => {
   room = HBInit({
     roomName: "𝐉𝐔𝐄𝐆𝐀𝐍 𝐓𝐎𝐃𝐎𝐒 | 𝐏𝐀𝐍𝐃𝐀🐼🎋",
-    maxPlayers: 24, // el que quieras
+    maxPlayers: 26, // el que quieras
     public: true,
     noPlayer: true,
     geo: {
@@ -487,11 +487,11 @@ HaxballJS.then((HBInit) => {
       room.setCustomStadium(mapaX3);
       room.setTimeLimit(3);
       room.setScoreLimit(3);
-    } else if (playerCount >= 8 && playerCount <= 17) {
+    } else if (playerCount >= 8 && playerCount <= 15) {
       room.setCustomStadium(mapaX5);
       room.setTimeLimit(7);
       room.setScoreLimit(5);
-    } else if (playerCount >= 18) {
+    } else if (playerCount >= 16) {
       room.setCustomStadium(mapaX7);
       room.setTimeLimit(7);
       room.setScoreLimit(5);
@@ -606,10 +606,11 @@ HaxballJS.then((HBInit) => {
 
   function checkSlots(p) {
     const players = room.getPlayerList().length;
+    const playerAuth = playerId[p.id];
 
-    if (players >= 22) {
+    if (players >= 24) { 
       if (!slotsActivated) {
-        if (rolesData[getPlayerRole(p.auth)]?.gameAdmin === true) {
+        if (rolesData.roles["owner"].users.includes(playerAuth) || rolesData.roles["coowner"].users.includes(playerAuth) || rolesData.roles["granpanda"].users.includes(playerAuth) || rolesData.roles["jefepanda"].users.includes(playerAuth) || rolesData.roles["maestropanda"].users.includes(playerAuth) || rolesData.roles["liderpanda"].users.includes(playerAuth) || rolesData.roles["subliderpanda"].users.includes(playerAuth) || rolesData.roles["asistente"].users.includes(playerAuth)) {
           room.sendAnnouncement("Slots activados solo para admins", null, null, "bold", 2);
           slotsActivated = true;
         } else {
@@ -685,15 +686,12 @@ HaxballJS.then((HBInit) => {
       activities[players[i].id] = Date.now();
     }
 
-    if (players.length >= 4) {
+    if (players.length >= 4 && lastMode) {
       if (chaosModeTimer) {
         clearTimeout(chaosModeTimer);
       }
-
-      chaosModeTimer = setTimeout(() => {
-        resetChaosMode(lastMode);
-        room.sendAnnouncement(`¡Modo ${lastMode} terminado!`, null, null, "bold", 2);
-      }, remainingTime);
+      resetChaosMode(lastMode);
+      room.sendAnnouncement(`¡Modo ${lastMode} terminado!`, null, null, "bold", 2);
     }
   };
 
@@ -711,13 +709,8 @@ HaxballJS.then((HBInit) => {
       return;
     }
 
-    const existingPlayerAuth = Object.keys(playerStats).find(auth => {
-      const player = playerStats[auth];
-      return player.name === p.name && auth !== p.auth && player.logged;
-    });
-
-    if (existingPlayerAuth) {
-      room.kickPlayer(p.id, "Ya hay un jugador con ese nombre logueado.", false);
+    if (playerStats[p.auth] && playerStats[p.auth].logged) {
+      room.kickPlayer(p.id, "Ya estás logueado en otro dispositivo.", false);
       return;
     }
 
@@ -1218,11 +1211,9 @@ HaxballJS.then((HBInit) => {
         }
 
         playerStats[playerAuth].games = (playerStats[playerAuth].games || 0) + 1;
-        let winratePercentage = 0;
-        if (playerStats[playerAuth].games > 0) {
-          winratePercentage = (playerStats[playerAuth].victories / playerStats[playerAuth].games) * 100;
-        }
-        playerStats[playerAuth].winrate = winratePercentage;
+        playerStats[playerAuth].winrate = (playerStats[playerAuth].games > 0)
+          ? (playerStats[playerAuth].victories / playerStats[playerAuth].games) * 100
+          : 0;
 
         const gkredPlayer = gkred.find(gk => playerId[gk.id] === playerAuth);
         const gkbluePlayer = gkblue.find(gk => playerId[gk.id] === playerAuth);
@@ -1238,7 +1229,7 @@ HaxballJS.then((HBInit) => {
     });
 
     try {
-      fs.writeFileSync(playersFilePath, JSON.stringify(playerStats, null, 2));
+      fs.writeFileSync(playersFilePath, JSON.stringifyc(playerStats, null, 2));
     } catch (err) {
       console.error('Error al escribir el archivo de jugadores:', err);
     }
